@@ -115,7 +115,6 @@ def add_password(user_info: dict):
 
 def view_password(user_info: dict):
     utils.clear_terminal()
-    site = input("Website: ").strip()
 
     try:
         user_folder = os.path.join(users_dirs, user_info["username"])
@@ -125,14 +124,21 @@ def view_password(user_info: dict):
         with open(vault_path, "r", encoding="utf-8") as f:
             vault_data = json.load(f)
 
-        site_data = vault_data.get(site)
-        if site_data:
-            password = user.decrypt(site_data["password"])
-            utils.printTitle(f"✅ Password for {site} is: {password}")
-        else:
-            utils.logError("❌ No password saved for this site.")
+        site_keys = [key for key in vault_data if key not in ["username", "password"]]
 
-        input("Press Enter to continue")
+        if not site_keys:
+            utils.logWarning("⚠️ No sites saved yet.")
+            input("Press Enter to continue")
+        else:
+            site = input("Website: ").strip()
+            site_data = vault_data.get(site)
+            if site_data:
+                password = user.decrypt(site_data["password"])
+                utils.printTitle(f"✅ Password for {site} is: {password}")
+            else:
+                utils.logError("❌ No password saved for this site.")
+
+            input("Press Enter to continue")
 
     except FileNotFoundError:
         utils.logError("❌ Vault not found.")
@@ -156,7 +162,7 @@ def view_saved_sites(user_info: dict):
         site_keys = [key for key in vault_data if key not in ["username", "password"]]
 
         if not site_keys:
-            console.print("[yellow]⚠️ No sites saved yet.[/yellow]")
+            utils.logWarning("⚠️ No sites saved yet.")
         else:
             for i, site in enumerate(site_keys, 1):
                 utils.printText(f"{i}. {site}")

@@ -28,5 +28,8 @@ class Utils:
     def logError(self, text: str):
         print(f"[bold red]{text}[/bold red]")
 
+    def logWarning(self, text: str):
+        print(f"[yellow]{text}[/yellow]")
+
     def clear_terminal(self):
         os.system("clear")
