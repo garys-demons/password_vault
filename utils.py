@@ -17,7 +17,9 @@ class Utils:
         print("1. Add a new password")
         print("2. View an existing password")
         print("3. View all saved sites")
-        print("4. Exit")
+        print("4. Update password")
+        print("5. Delete password")
+        print("6. Exit")
 
     def printTitle(self, text: str):
         print(f"[bold cyan]{text}[/bold cyan]")

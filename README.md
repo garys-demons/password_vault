@@ -6,12 +6,14 @@ A terminal-based password manager built with Python. It allows users to securely
 
 ## 📦 Features
 
-- ✅ Create user accounts with encrypted credentials
-- 🔑 Add new passwords for websites
-- 👁️ View stored passwords for any saved site
-- 🧾 List all saved sites
-- 🔒 Local file-based storage per user
-- ✨ Rich terminal UI using `rich` module
+- ✅ Create user accounts with encrypted credentials  
+- 🔑 Add new passwords for websites  
+- ✏️ Update existing website credentials (username or password)  
+- ❌ Delete saved site credentials  
+- 👁️ View stored passwords for any saved site  
+- 🧾 List all saved sites  
+- 🔒 Local file-based storage per user  
+- ✨ Rich terminal UI using `rich` module 
 
 ---
 

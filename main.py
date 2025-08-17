@@ -14,8 +14,8 @@ users_dirs = os.path.join(os.getcwd(), 'users')
 def create_user():
     utils.clear_terminal()
     utils.printTitle("Sign Up!")
-    username = input("username: ").strip()
-    password = input("password: ").strip()
+    username = input("Username: ").strip()
+    password = input("Password: ").strip()
 
     try:
         user_folder = os.path.join(users_dirs, username)
@@ -45,8 +45,8 @@ def log_in():
     utils.printTitle("Log in")
 
     while True:
-        username = input("username: ").strip()
-        password = input("password: ").strip()
+        username = input("Username: ").strip()
+        password = input("Password: ").strip()
 
         try:
             user_folder = os.path.join(users_dirs, username)
@@ -176,6 +176,92 @@ def view_saved_sites(user_info: dict):
     except Exception as e:
         utils.logError(f"❌ Unexpected error: {e}")
 
+def update_password(user_info: dict):
+    utils.clear_terminal()
+    utils.printTitle("Update password")
+
+    try:
+        user_folder = os.path.join(users_dirs, user_info["username"])
+        vault_path = os.path.join(user_folder, VAULT_FILENAME)
+        user = Encryptor(user_folder=user_folder)
+
+        with open(vault_path, "r", encoding="utf-8") as f:
+            vault_data = json.load(f)
+
+        site_keys = [key for key in vault_data if key not in ["username", "password"]]
+
+        if not site_keys:
+            utils.logWarning("⚠️ No sites saved yet.")
+            input("Press Enter to continue")
+            return 
+
+        site = input("Website: ").strip()
+
+        if site not in site_keys:
+            utils.logWarning("⚠️ Site not found.")
+            input("Press Enter to continue")
+            return 
+
+        site_username = input("Username: ").strip()
+        password = input("New password: ").strip()
+
+        encrypted_pass = user.encrypt(password)
+
+        vault_data[site]["username"] = site_username
+        vault_data[site]["password"] = encrypted_pass
+
+        with open(vault_path, "w", encoding="utf-8") as f:
+            json.dump(vault_data, f, indent=4)
+
+        utils.printTitle("✅ Password updated successfully!")
+        input("Press Enter to continue")
+
+    except FileNotFoundError:
+        utils.logError("❌ Vault not found.")
+    except json.JSONDecodeError:
+        utils.logError("❌ Error reading vault data.")
+    except Exception as e:
+        utils.logError(f"❌ Unexpected error: {e}")
+
+def delete_password(user_info: dict):
+    utils.clear_terminal()
+    utils.printTitle("Delete password")
+
+    try:
+        user_folder = os.path.join(users_dirs, user_info["username"])
+        vault_path = os.path.join(user_folder, VAULT_FILENAME)
+
+        with open(vault_path, "r", encoding="utf-8") as f:
+            vault_data = json.load(f)
+
+        site_keys = [key for key in vault_data if key not in ["username", "password"]]
+
+        if not site_keys:
+            utils.logWarning("⚠️ No sites saved yet.")
+            input("Press Enter to continue")
+            return 
+        
+        site = input("Website: ").strip()
+
+        if site not in site_keys:
+            utils.logWarning("⚠️ Site not found.")
+            input("Press Enter to continue")
+            return
+        
+        vault_data.pop(site)
+
+        with open(vault_path, "w", encoding="utf-8") as f:
+            json.dump(vault_data, f, indent=4)
+
+        utils.printTitle("✅ Password deleted successfully!")
+        input("Press Enter to continue")
+
+    except FileNotFoundError:
+        utils.logError("❌ Vault not found.")
+    except json.JSONDecodeError:
+        utils.logError("❌ Error reading vault data.")
+    except Exception as e:
+        utils.logError(f"❌ Unexpected error: {e}")
 
 def main():
     utils.clear_terminal()
@@ -187,7 +273,7 @@ def main():
 
     while True:
         utils.choices()
-        utils.printTitle("Enter your choice (1-4)")
+        utils.printTitle("Enter your choice (1-6)")
         try:
             choice = int(input())
             utils.printTitle("====================================")
@@ -202,6 +288,10 @@ def main():
         elif choice == 3:
             view_saved_sites(user)
         elif choice == 4:
+            update_password(user)
+        elif choice == 5:
+            delete_password(user)
+        elif choice == 6:
             utils.printTitle("👋 Exiting. Goodbye!")
             break
         else:
